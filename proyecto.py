@@ -1,52 +1,16 @@
 #Nombre: Evan Jesus Tejada Duarte
 #Carné: 0907-21-7854
-#nota: se supode que este es un proyecto de 5-6 integrantes pero devido a porblemas 
-#eh terminado solo. Todo el codigo presente lo escribí yo.
-
-
-#notas: la funcionalidad es escasas solo logra mostrar luego del menu principal
-#al intentar agregar un producto dentro del documento xlsx no me dejaba guardar los cambios
-#funciones de eliminar, editar y agregar no sirven (el de la 1.1 fue el primer intento) devido aque 
-#fui porbando y haciendolo por orden funciones mas complejas como enviar un correo o crear un archivo 
-#de guardado no se realizaron, podria haber copiado varias de las funciones en otras pero eso solo aria 
-#que me salten muchos errores ya que no están completas. La ultima vez que lo edite (30/10/2021)
-#las funciones de 'listar'(me refiero a productos, clientes, etc) si funcionaban hago enfasis en esto
-#ya que pasaron un par de veces que estas me daban problemas siendo practicamente iguales
-
-#coincidero logre hacer al rededor de un 20% o 15% o incluso menos, no se, califique según su criterio 
-#si desea tomar en cuenta que lo trabaje solo y lo que hice hubiera sido un porcentual del trabajo que me 
-#hubiece tocado si trabajaba en un grupo, o bien, califiquelo como si fuera un grupo solo.
-
-#hay muchas notas que separan funciones para que se le sea mas entendible
-
-
 
 #importo el documento inventario.xlsx
+#from _typeshed import Self
+from re import S
 import openpyxl
+from openpyxl import load_workbook
 libro = openpyxl.load_workbook("inventario.xlsx")
-hoja_productos = libro["Productos"]
-#libererias de productos 
-productoslp =[] #productos -- lista de productos
-diccionarioproductoslp = {}
-productosap =[] #productos -- agregar producto
-diccionarioproductosap = {}
+hoja_productos = libro['Productos']
+hoja_clientes = libro['Clientes']
+hoja_pedidos = libro['Pedidos']
 
-hoja_clientes = libro["Clientes"]
-#librerias de clientes 
-clienteslc = [] #clientes -- lista de clientes 
-diccionarioclienteslc = {}
-
-hoja_pedidos = libro["Pedidos"]
-#libreria de Pedidos
-pedidoslp = [] #pedidos -- lista de pedidos
-diccionariopedidoslp = {}
-
-#def muestra un menu con las opciones principales
-# 1. Productos
-# 2. Clientes
-# 3. Pedidos
-# 4. Informes
-# 5. Varios
 
 
 def pricipal():
@@ -58,15 +22,14 @@ def pricipal():
     print("6. Cancelar \n")
 
 pricipal()
-
-print("Eliga una opción")
-opcionElegida = int(input())
+opcionElegida = int(input('Eliga una opción: '))
 
 while opcionElegida != 6:
 
 #1. Productos
     if opcionElegida == 1:
         def produc():
+            print('Seleccione la opcion deseada')
             print("1.1 Agregar producto")
             print("1.2 Editar producto")
             print("1.3 Eliminar producto")
@@ -74,8 +37,7 @@ while opcionElegida != 6:
             print("1.5 Enviar cotización por correo")
             print("1.6 Cancelar \n")
         produc()
-        print("Eliga que acción realizar")
-        productos =  float(input())
+        productos =  float(input('Eliga que acción realizar: '))
     #aqui comienza las funciones de las opciones 1.#
 
     #1.1 Agregar producto
@@ -83,30 +45,24 @@ while opcionElegida != 6:
             hoja_productos['A1'].value = 'nombre'
             hoja_productos['B1'].value = 'precio'
             hoja_productos['C1'].value = 'existencia'
+            addprod = []
+            addproddic = {}
             
-            nombrep = input("Introduce el nombre del producto: ")
-            diccionarioproductosap['nombre'] = nombrep
-            preciop = float(input("Introduce el precio del producto: "))
-            diccionarioproductosap['precio'] = preciop
-            existenciap = int(input("Introduce la existencia del producto: "))
-            diccionarioproductosap['existencia'] = existenciap
-            productosap.append(diccionarioproductosap)
+            producaddpro = str(input("Introduce el nombre del producto: "))
+            addproddic['nombre'] = producaddpro
+            priceaddpro = float(input("Introduce el precio del producto: "))
+            addproddic['precio'] = priceaddpro
+            amountaddpro = int(input("Introduce la existencia del producto: "))
+            addproddic['existencia'] = amountaddpro
+            addprod.append(addproddic)
 
-            fila = hoja_productos.max_row + 1
-            for producto in productosap:
-                hoja_productos['A' + str(fila)].value = produc['nombre']#me salta un error justamente en esta linea de codigo diciendo que le falta un valor 
-                hoja_productos['B' + str(fila)].value = produc['precio']
-                hoja_productos['C' + str(fila)].value = produc['existencia']
-                
-        #guardar 
-            libro.save("inventario.xlsx")
-            
-
-            for item in productosap:
-                print("Nombre:" + item['nombre'])
-                print("Precio:" + str(item['precio']))
-                print("Existencia:" + str(item["existencia"]))
-    
+            firstrow = hoja_productos.max_row + 1
+            for addprodin in addprod:
+                hoja_productos['A' + str(firstrow)].value = addprodin['nombre']
+                hoja_productos['B' + str(firstrow)].value = addprodin['precio']
+                hoja_productos['C' + str(firstrow)].value = addprodin['existencia']
+            # libro.remove('inventario.xlsx') 
+            # libro.save("inventario.xlsx")
     # Esto me paso con todos, no logro hacer que vuelva a las opciones #.# asi que lo mando al menu principal
             opcionElegida = 0
             print("saliendo \n")
@@ -116,15 +72,46 @@ while opcionElegida != 6:
             
     #1.2 Editar producto
         elif productos == 1.2:
-            #esto simplemente no funciona además que no llegue hasta el. pero si imprime y hace lo que dice 
-            nombrep = input("Introduce el nombre del producto : ")
-            preciop = float(input("Introduce el precio del producto : "))
-            existenciap = int(input("Introduce la existencia del producto : "))
-            tuple_ed = {
-            "El nombre del prodcuto es": nombrep,
-            "su precio es de ": preciop,
-            "y la existencia es": existenciap}
-            print(tuple_ed)
+            editprod = []
+            editproddic = {}
+
+            for rows in range(2, hoja_productos.max_row + 1):
+                producaddpro = hoja_productos['A' + str(rows)].value
+                priceaddpro = hoja_productos['B' + str(rows)].value
+                amountaddpro = hoja_productos['C' + str(rows)].value
+                editproddic['producto'] = priceaddpro
+                editproddic['precio'] = priceaddpro
+                editproddic['existencia'] = amountaddpro
+                editprod.append(editproddic)
+                editproddic = {}
+            integratoredit = 1
+            for editprodin in editprod:
+                print('line: '+str(integratoredit),
+                ' Producto: '+str(editprodin['producto']),
+                ' Precio: '+str(editprodin['precio']),
+                ' Existencia: '+str(editprodin['existencia'])
+                )
+                integratoredit += 1
+            editselect = int(input('Ingrese el numero de liena del producto a editar: '))
+            edit = editselect + 1
+            hoja_productos['A1'].value = 'Producto'
+            hoja_productos['B1'].value = 'Precio'
+            hoja_productos['C1'].value = 'Existencia'
+            editprodadd = []
+            editproddicadd = {}
+            produceditadd = input('Ingrese el nuevo nombre del producto: '+hoja_productos['A'+str(edit)].value)
+            editproddicadd['producto'] = produceditadd
+            priceeditadd = float(input('Ingrese el nuevo precio del producto: '+str(hoja_productos['B'+str(edit)].value)))
+            editproddicadd['precio'] = priceeditadd
+            amounteditadd = float(input('Ingrese el nuevo precio del producto: '+str(hoja_productos['C'+str(edit)].value)))
+            editproddicadd['existencia'] = amounteditadd
+            editprodadd.append(editproddicadd)
+            for editprodaddin in editproddicadd:
+                hoja_productos['A'+str(edit)].value = editprodaddin['producto'] 
+                hoja_productos['B'+str(edit)].value = editprodaddin['precio']
+                hoja_productos['C'+str(edit)].value = editprodaddin['existencia']
+            libro.remove('inventario.xlsx')
+            libro.save('inventario.xlsx')
             opcionElegida = 0
             produc()
             print("Eliga que acción realizar")
@@ -132,34 +119,48 @@ while opcionElegida != 6:
 
     #1.3 Eliminar producto
         elif productos == 1.3:
-            #cuando haya diccionario remplazar variables
-            nombrep = input("Introduce el nombre del producto a eliminar: ")
-            preciop = float(input("Introduce el precio del producto a eliminar: "))
-            existenciap = int(input("Introduce la existencia del producto a eliminar: "))
-            tuple_el = {
-            "El nombre del prodcuto es": nombrep,
-            "su precio es de ": preciop,
-            "y la existencia es": existenciap}
-            print(tuple_el)
+            deleteprod = []
+            deleteproddic = {}
+            for row in range(2, hoja_productos.max_row + 1):
+                proddelete = hoja_productos['A'+str(row)].value
+                pricedelete = hoja_productos['B'+str(row)].value
+                amountdelete = hoja_productos['C'+str(row)].value
+                deleteproddic['producto'] = proddelete
+                deleteproddic['precio'] = pricedelete
+                deleteproddic['existencia'] = amountdelete
+                deleteprod.append(deleteproddic)
+                deleteproddic = {}
+            integratordelete = 1
+            for deleteprodin in deleteprod:
+                print('Linea: '+str(deleteprodin),'Prodcuto: '+deleteprodin['producto'],'Precio: '+str(deleteprodin['precio']),'Existencia: '+str(deleteprodin['existencia']))
+                integratordelete = integratordelete + 1
+            rowdelete = int(input('Ingrese el numero de la fila a borrar: '))
+            deleterow = deleteprod + 1
+            hoja_productos.delete_rows(deleterow, 1)
+            libro.remove('inventario.xlsx')
+            libro.save('inventario.xlsx')
+
             opcionElegida = 0
-            produc()
-            print("Eliga que acción realizar")
-            productos =  float(input())
+            print("saliendo \n")
+            pricipal()
+            print("Eliga una opción")
+            opcionElegida = int(input())
 
     #1.4 Listar productos
-        #la lista es completamente funcional
         elif productos == 1.4:
+            listprod= []
+            listproddic = {}
             for row in range(2, hoja_productos.max_row + 1):
-                nombrep = hoja_productos["A" + str(row)].value
-                preciop = hoja_productos["B" + str(row)].value
-                existenciap = hoja_productos["C" + str(row)].value
-                diccionarioproductoslp['nombre'] = nombrep
-                diccionarioproductoslp['precio'] = preciop
-                diccionarioproductoslp['existencia'] = existenciap
-                productoslp.append(diccionarioproductoslp)
-                diccionarioproductoslp = {}
+                prodlist = hoja_productos["A" + str(row)].value
+                pricelist = hoja_productos["B" + str(row)].value
+                amountlist = hoja_productos["C" + str(row)].value
+                listproddic['nombre'] = prodlist
+                listproddic['precio'] = pricelist
+                listproddic['existencia'] = amountlist
+                listprod.append(listproddic)
+                listproddic = {}
 
-            for item in productoslp:
+            for item in listprod:
                 print("Nombre:" + item['nombre'])
                 print("Precio:" + str(item['precio']))
                 print("Existencia:" + str(item['existencia']))
@@ -213,16 +214,26 @@ while opcionElegida != 6:
     #2.1 Agregar Cliente
         #cuando haya diccionario remplazar variables
         if clientes == 2.1:
-            nombreac = input("Escriba el nombre del cliente:")
-            print("A continuación se le pide el NIT, el nuestro es de 6 digitos y sin guiones")
-            nitac = int(input("Ingrese el NIT del cliente:"))
-            direccionac = input("Escriba la dirección del cliente:")
-            tuple_ac = {
-                "El nombre del cliente es": nombreac,
-                "El nit del cliente es": nitac,
-                "La dirección del cliente es": direccionac}
-            print(tuple_ac)
+            hoja_clientes['A1'].value = 'Nombre'
+            hoja_clientes['B2'].value = 'NIT'
+            hoja_clientes['C1'].value = 'Direccion'
+            addcliet = []
+            addclietdic = {}
+            nameclient = input('Ingrese el nombre del cliente: ')
+            addclietdic['nombre'] = nameclient
+            nitclient = input('Ingrese el nit del cliente: ')
+            addclietdic['nit'] = nitclient
+            directionclient= input('Ingrese la dirección del cliente: ')
+            addclietdic['direccion'] = directionclient
+            addcliet.append(addclietdic)
 
+            rowclient = hoja_clientes.max_row + 1
+            for addclientin in addcliet:
+                hoja_clientes['A'+str(rowclient)].value = addclientin['nombre']
+                hoja_clientes['B'+str(rowclient)].value = addclientin['nit']
+                hoja_clientes['C'+str(rowclient)].value = addclientin['direccion']
+            #libro.remove('inventario.xlsx')
+            #libro.save('inventario.xlsx')
             opcionElegida = 0
             print("saliendo \n")
             pricipal()
@@ -232,15 +243,45 @@ while opcionElegida != 6:
     #2.2 Editar Cliente
         #cuando haya diccionario remplazar variables
         elif clientes == 2.2:
-            nombreac = input("Escriba el nombre del cliente:")
-            print("A continuación se le pide el NIT, el nuestro es de 6 digitos y sin guiones")
-            nitac = int(input("Ingrese el NIT del cliente:"))
-            direccionac = input("Escriba la dirección del cliente:")
-            tuple_ec = {
-                "El nombre del cliente es": nombreac,
-                "El nit del cliente es": nitac,
-                "La dirección del cliente es": direccionac}
-            print(tuple_ec)
+            editclient= []
+            editclientdic = {}
+            for editclientin in range(2, hoja_clientes.max_row + 1):
+                nameedit = hoja_clientes['A'+str(editclientin)].value
+                nitedit = hoja_clientes['B'+str(editclientin)].value
+                directionedit = hoja_clientes['C'+str(editclientin)].value
+                editclientdic['nombre'] = nameedit
+                editclientdic['nit'] = nitedit
+                editclientdic['direccion'] = directionedit
+                editclient.append(editclientdic)
+                editclientdic = {}
+            intclientedit = 1
+            for clienteditin in editclient:
+                print('Linea: '+str(intclientedit),
+                ' Nombre: '+clienteditin['nombre'],
+                ' NIT: '+str(clienteditin['nit']),
+                'Dirección: '+str(clienteditin['direccion']))
+                intclientedit += 1
+            selectedit = int(input('Ingrese el numero de fila a borrar: '))
+            clientedit = selectedit + 1
+            hoja_clientes['A1'].value = 'nombre'
+            hoja_clientes['B1'].value = 'nit'
+            hoja_clientes['C1'].value = 'direccion'
+            addclientedit = []
+            addclienteditdic = {}
+            nameclientadd = input('Ingrese el nuevo nombre del cliente: ' + hoja_clientes['A'+str(clientedit)].value)
+            addclienteditdic['nombre'] = nameclientadd
+            nitclientadd = input('Ingrese el nuevo NIT del cliente: '+hoja_clientes['B'+str(clientedit)].value)
+            addclienteditdic['nit'] = nitclientadd
+            directionclientadd = input('Ingrese la nueva dirección del cliente: '+hoja_clientes['C'+str(clientedit)].value)
+            addclienteditdic['direccion'] = directionclientadd
+            addclientedit.append(addclienteditdic)
+
+            for clientedit in addclientedit:
+                hoja_clientes['A'+str(clientedit)].value = editclient['nombre']
+                hoja_clientes['B'+str(clientedit)].value = editclient['nit']
+                hoja_clientes['C'+str(clientedit)].value = editclient['direccion']
+            libro.remove('inventario.xlsx')
+            libro.save('inventario.xlsx')
 
             opcionElegida = 0
             print("saliendo \n")
@@ -251,13 +292,27 @@ while opcionElegida != 6:
     #2.3 Eliminar Cliente
         #cuando haya diccionario remplazar variables
         elif clientes == 2.3:
-            nombrebc = input("Escriba el nombre del cliente:")
-            #cuando haya diccionario cambiar variables
-            tuple_bc = {
-                "El nombre del cliente que elimino es": nombreac,
-                "El nit del cliente que elimino es": nitac,
-                "La dirección del cliente que elimino es": direccionac}
-            print(tuple_bc)
+            deleteclient= []
+            deleteclientdic = {}
+
+            for clientdeletein in range(2, hoja_clientes.max_row + 1):
+                clientdelete = hoja_clientes['A'+str(clientdeletein)].value
+                nitdelete = hoja_clientes['B'+str(clientdeletein)].value
+                directiondelete = hoja_clientes['C'+str(clientdeletein)].value
+                deleteclientdic['nombre'] =  clientdelete
+                deleteclientdic['nit'] = nitdelete
+                deleteclientdic['direccion'] = directiondelete
+                deleteclient.append(deleteclientdic)
+                deleteclientdic = {}
+            integratorclientdelete = 1
+            for deleteclientin in deleteclient:
+                print('Linea: ',str(deleteclientin)+'Nombre: '+deleteclientin['nombre']+'NIT: ',str(deleteclientin['nit'])+'Dirección: ',str(deleteclientin['direccion']))
+                integratorclientdelete = 1
+            rowclientdelete = int(input('Ingrese el numero de fijla a borrar: '))
+            rowdeleteclient = rowclientdelete + 1
+            hoja_clientes.delete_rows(rowdeleteclient, 1)
+            # libro.remove('inventario.xlsx')
+            # libro.save('inventario.xlsx')
 
             opcionElegida = 0
             print("saliendo \n")
@@ -268,20 +323,21 @@ while opcionElegida != 6:
     #2.4 Listar Clientes
         #A pesar de ser igual en el comando que el 1.4 este imprime al rededor de 8 caracteres (nombre, nit, dirreccion) bacios
         elif clientes == 2.4:
-            for row in range(hoja_clientes.max_row + 1):
-                nombrec = hoja_clientes["A" + str(row)].value
-                nitc = hoja_clientes["B" + str(row)].value
-                direccionac = hoja_clientes["C" + str(row)].value
-                diccionarioclienteslc['cnombre'] = nombrec
-                diccionarioclienteslc['nit'] = nitc
-                diccionarioclienteslc['direccion'] = direccionac
-                clienteslc.append(diccionarioclienteslc)
-                diccionarioclienteslc = {}
-
-            for item in clienteslc:
-                print("Nombre:" + str(item['cnombre']))
-                print("NIT:" + str(int['nit']))
-                print("Dirección:" + str(item["direccion"]))
+            listclient = []
+            listclientdic = {}
+            for row in range(2, hoja_clientes.max_row + 1):
+                namelist = hoja_clientes["A" + str(row)].value
+                nitlist = hoja_clientes["B" + str(row)].value
+                directionlist = hoja_clientes["C" + str(row)].value
+                listclientdic['nombre'] = namelist
+                listclientdic['nit'] = nitlist
+                listclientdic['direccion'] = directionlist
+                listclient.append(listclientdic)
+                listclientdic = {}
+            for listclientin in listclient:
+                print(" Nombre: " + str(listclientin['nombre']))
+                print(" NIT: " + str(listclientin['nit']))
+                print(" Dirección: " + str(listclientin["direccion"]))
 
             opcionElegida = 0
             print("saliendo \n")
@@ -309,7 +365,59 @@ while opcionElegida != 6:
     #aqui comienza las funciones de las opciones 3.#
 
     #3.1 Agregar Pedido
-        #cuando haya diccionario remplazar variables
+        clientorder = []
+        clientorderdic = {}
+
+        for rowclientorder in range(2, hoja_clientes.max_row + 1):
+            nameclientorder = hoja_clientes['A'+str(rowclientorder)].value
+            clientorderdic['nombre'] = nameclientorder
+            clientorder.append(clientorderdic)
+            clientorderdic = {}
+        print('Los clientes son: ')
+        for orderclient in clientorder:
+            print('El nombre del cliente es: '+str(orderclient['nombre']))
+        hoja_pedidos['A1'].value = 'cliente'
+        hoja_pedidos['B1'].value = 'producto'
+        hoja_pedidos['C1'].value = 'cantidad'
+        hoja_pedidos['D1'].value = 'valorpedido'
+
+        addorder = []
+        addorderdic = {}
+        nameaddorder = input('Ingrese uno de los nombres que se muestran en la lista anterior: ')
+        addorderdic['namecliente'] = nameaddorder
+
+        addprodorder = []
+        addprodorderdic = {}
+        for rowprodorder in range(2, hoja_productos.max_row + 1):
+            orderprod = hoja_productos['A'+str(rowprodorder)].value
+            addclienteditdic['producto'] = orderprod
+            addprodorder.append(addclienteditdic)
+            addclienteditdic = {}
+
+        integratororder = 1
+        for prodorder in addorder:
+            print('Numero de linea: '+str(integratororder)+'Producto: '+prodorder['producto'])
+            integratororder += 1
+        nameorderprod = int(input('Ingrese e numero de la linea del prodcuto: '))
+        rownameorderprod = nameorderprod + 1
+        addorderdic['nameproducto'] = hoja_productos['A'+str(rownameorderprod)].value
+        amountorder = int(input('Ingrese la cantidad a comprar: '))
+        addorderdic['cantidad'] = amountorder
+        addorderdic['precio'] = amountorder * hoja_productos['B'+str(rownameorderprod)].value
+        addorder.append(addorderdic)
+
+        rowaddorder = hoja_pedidos.max_row + 1
+        for orderin in addorder:
+            hoja_pedidos['A'+str(rowaddorder)].value = orderin['namecliente']
+            hoja_pedidos['B'+str(rowaddorder)].value = orderin['nameprodcuto']
+            hoja_pedidos['C'+str(rowaddorder)].value = orderin['cantidad']
+            hoja_pedidos['D'+str(rowaddorder)].value = orderin['precio']
+        editamount = hoja_productos['C'+str(rownameorderprod)].value - amountorder
+        hoja_productos['C'+str(rownameorderprod)] = editamount
+        libro.remove('inventario.xlsx')
+        libro.save('invenatrio.xlsx')
+        
+
 
         opcionElegida = 0
         print("saliendo \n")
@@ -319,9 +427,30 @@ while opcionElegida != 6:
 
     #3.2 Eliminar Pedido
         if pedidos == 3.2:
-            nombrebp = input("Ingrese el nombre del pedido:")
-        #cuando haya diccionario remplazar variables
-        
+            deleteorder = []
+            deleteorderdic = {}
+
+            for rowdeleteorder in range(2, hoja_pedidos.max_row + 1):
+                nameclientdeleteorder = hoja_pedidos['A'+str(rowdeleteorder)].value
+                nameproddeleteorder = hoja_pedidos['B'+str(rowdeleteorder)].value
+                amountdeleteorder = hoja_pedidos['C'+str(rowdeleteorder)].value
+                pricedeleteorder = hoja_pedidos['D'+str(rowdeleteorder)].value
+                deleteorderdic['namecliente'] = nameclientdeleteorder
+                deleteorderdic['nameprodcuto'] = nameproddeleteorder
+                deleteorderdic['cantidad'] = amountdeleteorder
+                deleteorderdic['precio'] = pricedeleteorder
+                deleteorder.append(deleteclientdic)
+                deleteclientdic = {}
+            integratordeleteorder = 1
+            
+            for deleteorderin in deleteorder:
+                print('Linea: '+str(integratordeleteorder)+'Cliente: '+deleteclientin['namecliente']+'Producto: '+deleteclientin['nameproducto']+'Cantidad: '+str(deleteclientin['cantidad'])+'Precio del pedido: '+str(deleteclientin['precio']))
+                integratordeleteorder += 1 
+            deleteorderrow = int(input('Ingrese el numero de la fila para borrar: '))
+            deleteroworder = deleteorderrow + 1
+            hoja_pedidos.delete_rows(deleteroworder, 1)
+            libro.remove('inventario.xlsx')
+            libro.save('inventario.xlsx')
 
             opcionElegida = 0
             print("saliendo \n")
@@ -332,23 +461,26 @@ while opcionElegida != 6:
     #3.3 Listar Pedidos
         #esta lista no pide el contenido del .xlsx pero si cambio 'hoja_pedidos' por 'hoja_productos' si es funcional, no lo comprendo
         elif pedidos == 3.3:
-            for row in range(2, hoja_pedidos.max_row + 1):
-                nombrecli = hoja_pedidos["A" + str(row)].value
-                nombrelpp = hoja_pedidos["B" + str(row)].value
-                cantidadplp = hoja_pedidos["C" + str(row)].value
-                valorplp = hoja_pedidos["D" + str(row)].value
-                diccionariopedidoslp['nombrecli'] =  nombrecli
-                diccionariopedidoslp['nombrelp'] = nombrelpp
-                diccionariopedidoslp['cantidad'] = cantidadplp
-                diccionariopedidoslp['valor'] = valorplp
-                pedidoslp.append(diccionariopedidoslp)
-                diccionariopedidoslp = {}
+            listorder = []
+            listorderdic = {}
 
-            for item in pedidoslp:
-                print("Nombre del Cliente:" + item[' nombrecli'])
-                print("Nombre del Producto:" + item['nombrelp'])
-                print("Cantidad de Producto:" + str(item['cantidad']))
-                print("Valor de Prodcuto:" + float(item['valor']))
+            for row in range(2, hoja_pedidos.max_row + 1):
+                namelistorderclient = hoja_pedidos["A" + str(row)].value
+                namelistorderprod = hoja_pedidos["B" + str(row)].value
+                amountlistorder = hoja_pedidos["C" + str(row)].value
+                pricelistorder = hoja_pedidos["D" + str(row)].value
+                listorderdic['namecliente'] =  namelistorderclient
+                listorderdic['nameproducto'] = namelistorderprod
+                listorderdic['cantidad'] = amountlistorder
+                listorderdic['precio'] = pricelistorder
+                listorder.append(listorderdic)
+                listorderdic = {}
+
+            for listorderin in listorder:
+                print("Nombre del Cliente:" + listorderin[' namecliente'])
+                print("Nombre del Producto:" + listorderin['nameproducto'])
+                print("Cantidad de Producto:" + str(listorderin['cantidad']))
+                print("Valor de Prodcuto:" + str(listorderin['valor']))
 
             opcionElegida = 0
             print("saliendo \n")
@@ -375,7 +507,23 @@ while opcionElegida != 6:
     #aqui comienza las funciones de las opciones 4.#
     #4.1 Total de Ventas por Cliente
         if informes == 4.1:
-        #cuando haya libreria reflejar lista de clientes + pedidos
+            clientreport = []
+            clientreportdic = {}
+            integratorclientreport = 2
+            salesclient = 0.0
+            for rowclientreport in range(2, hoja_pedidos.max_row + 1):
+                nameclientreport = hoja_pedidos['A'+str(rowclientreport)].value
+                priceclientreport = hoja_pedidos['D'+str(rowclientreport)].value
+                clientreportdic['nameclientreport'] = nameclientreport
+                clientreportdic['priceclientreport'] = priceclientreport
+                clientreport.append(clientreportdic)
+                clientreportdic = {}
+            
+            for clientreportin in clientreport:
+                print('Nombre del cliente: '+clientdeletein['nameclientreport'])
+                print('Total de venta: '+str(clientdeletein['priceclientreport']))
+                integratorclientreport += 1
+            print(salesclient)
 
             opcionElegida = 0
             print("saliendo \n")
@@ -383,9 +531,25 @@ while opcionElegida != 6:
             print("Eliga una opción")
             opcionElegida = int(input())
 
-    #4.2 Total de Ventas por Cliente
+    #4.2 Total de Ventas por Producto
         if informes == 4.2:
-        #cuando haya libreria reflejar lista de productos + varible nueva
+            prodreport = []
+            prodreportdic ={}
+            integratorprodreport = 2
+            salesprod = 0.0
+            for rowprodreport in range(2, hoja_pedidos.max_row + 1):
+                nameprodreport = hoja_pedidos['B'+str(rowprodreport)].value
+                priceprodreport = hoja_pedidos['D'+str(rowprodreport)].value
+                prodreportdic['nameprodreport'] = nameprodreport
+                prodreportdic['priceclientreport'] = priceclientreport
+                prodreport.append(prodreportdic)
+                prodreportdic = {}
+            
+            for prodreportin in prodreport:
+                print('Nombre del producto: '+prodreportin['nameprodreport'])
+                print('Total de venta: '+str(prodreportin['priceclientreport']))
+                salesprod += hoja_pedidos['D'+str(integratorclientreport)].value
+                integratorclientreport +=1
 
             opcionElegida = 0
             print("saliendo \n")
